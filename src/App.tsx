@@ -28,11 +28,12 @@ const Container = ({ heading, children }: ContainerProps): ReactElement => {
 }
 
 // functional props
-const TextWithNumber = ({ children }: { children: (num: number) => ReactNode }) => {
-    const [state, setState] = React.useState<number>(1);
+const TextWithNumber = ({ header, children }: { header: (num: number) => ReactNode; children: (num: number) => ReactNode }) => {
+    const [state, setState] = React.useState<number>(0);
 
     return (
       <div>
+        <h2>{header?.(state)}</h2>
         <div>
           {children(state)}
         </div>
@@ -43,6 +44,37 @@ const TextWithNumber = ({ children }: { children: (num: number) => ReactNode }) 
     )
 }
 
+// List  (generics)
+function List<ListItem>({
+  items,
+  render,
+}: {
+  items: ListItem[],
+  render: (item: ListItem) => ReactNode
+}) {
+  return (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>
+          {render(item)}
+        </li>
+      ))}
+    </ul>
+
+  )
+}
+
+// class component
+class MyHeader extends React.Component<{
+    title: ReactNode, 
+}> {
+  render() {
+    return (
+      <h1>{this.props.title}</h1>
+    )
+  }
+}
+
 Container.defaultProps = defaultContainerProps;
 
 const App = () => {
@@ -51,9 +83,11 @@ const App = () => {
       <Heading title="Hello There" />
       <HeadingWithContent><strong>hi</strong></HeadingWithContent>
       <Container>hi!</Container>
-      <TextWithNumber>
+      <TextWithNumber header={(num: number) => <span>Header {num}</span>}>
         {(num: number) => <div>Today's number is {num} </div>}
       </TextWithNumber>
+      <List items={["Tylo", "Muzi", "Boitumelo"]} render={(item: string) => <div>{item.toLowerCase()}</div> } />
+      <MyHeader title="there ya go"/>
     </div>
   );
 }
